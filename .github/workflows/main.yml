@@ -1,0 +1,52 @@
+# This is a GitHub Actions workflow to build the Void editor for macOS (Intel).
+# To use this, create a file named `main.yml` (or any other .yml name)
+# in the `.github/workflows/` directory of your forked Void editor repository.
+
+name: Build Void for macOS (Intel)
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push events for all branches
+  push:
+    branches: [ '**' ]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build-macos-intel:
+    # The type of runner that the job will run on
+    runs-on: macos-12 # Using macos-12 for Intel-based builds
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Sets up Node.js environment
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # Specify the Node.js version required by Void
+
+      # Installs project dependencies
+      - name: "Install Dependencies"
+        run: npm install
+
+      # Builds the React frontend of the Void editor
+      - name: Build React Frontend
+        run: npm run buildreact
+
+      # Compiles the TypeScript code of the editor
+      - name: Compile Application
+        run: npm run compile
+
+      # Packages the application into a distributable format for macOS
+      - name: Package macOS Application
+        run: npm run package-mac
+
+      # Uploads the built application as a workflow artifact
+      - name: Upload macOS Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Void-macOS-Intel
+          path: out/make/dmg/x64/*.dmg
