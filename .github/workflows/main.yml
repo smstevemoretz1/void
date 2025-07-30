@@ -31,9 +31,9 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
-      # Install gnu-libtool to prevent build errors on macOS (as per docs)
+      # Install libtool (GNU libtool) to prevent build errors on macOS (as per docs)
       - name: Install macOS Prerequisites
-        run: brew install gnu-libtool
+        run: brew install libtool
 
       # Installs project dependencies
       - name: "Install Dependencies"
