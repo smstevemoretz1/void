@@ -51,9 +51,13 @@ jobs:
       - name: Package macOS Application (Intel)
         run: npm run gulp vscode-darwin-x64
 
+      # Move the artifact into the workspace to prepare for upload
+      - name: Move Artifact for Upload
+        run: mv ../VSCode-darwin-x64 .
+
       # Uploads the built application folder as a workflow artifact
       - name: Upload macOS Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Void-macOS-Intel-App
-          path: ../VSCode-darwin-x64/
+          path: VSCode-darwin-x64/
