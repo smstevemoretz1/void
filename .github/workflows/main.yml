@@ -35,8 +35,10 @@ jobs:
       - name: Install macOS Prerequisites
         run: brew install libtool
 
-      # Installs project dependencies
+      # Installs project dependencies, providing a GitHub token to avoid rate-limiting issues
       - name: "Install Dependencies"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm install
 
       # Packages the application using the official gulp task for Intel Macs
