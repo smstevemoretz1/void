@@ -41,6 +41,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm install
 
+      # Build the React components first, as they are a dependency for the main compilation
+      - name: Build React Components
+        env:
+          NODE_OPTIONS: "--max-old-space-size=8192"
+        run: npm run buildreact
+
       # Packages the application using the official gulp task for Intel Macs
       - name: Package macOS Application (Intel)
         run: npm run gulp vscode-darwin-x64
