@@ -1,6 +1,5 @@
 # This is a GitHub Actions workflow to build the Void editor for macOS (Intel).
-# To use this, create a file named `main.yml` (or any other .yml name)
-# in the `.github/workflows/` directory of your forked Void editor repository.
+# It has been updated based on the official build documentation.
 
 name: Build Void for macOS (Intel)
 
@@ -20,33 +19,30 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # Sets up Node.js environment
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      # Sets up Node.js using the exact version from the .nvmrc file (as per docs)
+      - name: Set up Node.js from .nvmrc
+        uses: actions/setup-node@v4
         with:
-          node-version: '18' # Specify the Node.js version required by Void
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      # Install gnu-libtool to prevent build errors on macOS (as per docs)
+      - name: Install macOS Prerequisites
+        run: brew install gnu-libtool
 
       # Installs project dependencies
       - name: "Install Dependencies"
         run: npm install
 
-      # Builds the React frontend of the Void editor
-      - name: Build React Frontend
-        run: npm run buildreact
+      # Packages the application using the official gulp task for Intel Macs
+      - name: Package macOS Application (Intel)
+        run: npm run gulp vscode-darwin-x64
 
-      # Compiles the TypeScript code of the editor
-      - name: Compile Application
-        run: npm run compile
-
-      # Packages the application into a distributable format for macOS
-      - name: Package macOS Application
-        run: npm run package-mac
-
-      # Uploads the built application as a workflow artifact
+      # Uploads the built application folder as a workflow artifact
       - name: Upload macOS Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Void-macOS-Intel
-          path: out/make/dmg/x64/*.dmg
+          name: Void-macOS-Intel-App
+          path: ../VSCode-darwin-x64/
