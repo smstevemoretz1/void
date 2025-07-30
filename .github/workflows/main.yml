@@ -13,8 +13,11 @@ on:
 
 jobs:
   build-macos-intel:
-    # The type of runner that the job will run on
-    runs-on: macos-12 # Using macos-12 for Intel-based builds
+    # The type of runner that the job will run on.
+    # Using macos-13 as it is the latest supported standard runner with an Intel (x64) architecture.
+    # macos-12 is deprecated, causing long queue times.
+    # macos-14 standard runners are ARM64 (Apple Silicon).
+    runs-on: macos-13
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
