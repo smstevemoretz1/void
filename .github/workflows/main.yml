@@ -51,6 +51,10 @@ jobs:
       - name: Build macOS Application (Intel)
         run: npm run gulp vscode-darwin-x64
 
+      # Move the built application into the current directory to simplify paths
+      - name: Move Application for Packaging
+        run: mv ../VSCode-darwin-x64 .
+
       # Create a highly compressed .dmg from the application bundle
       - name: Create DMG Artifact
         run: |
@@ -64,7 +68,7 @@ jobs:
             --app-drop-link 600 185 \
             --format UDBZ \
             "Void-macOS-Intel.dmg" \
-            "../VSCode-darwin-x64/Void.app" || true
+            "VSCode-darwin-x64/Void.app"
       
       # Uploads the final .dmg file as a workflow artifact
       - name: Upload macOS Artifact
