@@ -51,9 +51,10 @@ jobs:
       - name: Build macOS Application (Intel)
         run: npm run gulp vscode-darwin-x64
 
-      # Create a compressed .dmg from the application bundle
+      # Create a highly compressed .dmg from the application bundle
       - name: Create DMG Artifact
         run: |
+          sleep 5 # Add a small delay to prevent "Resource busy" errors
           create-dmg \
             --volname "Void Installer" \
             --window-pos 200 120 \
@@ -62,6 +63,7 @@ jobs:
             --icon "Void.app" 200 190 \
             --hide-extension "Void.app" \
             --app-drop-link 600 185 \
+            --format UDBZ \
             "Void-macOS-Intel.dmg" \
             "../VSCode-darwin-x64/Void.app"
       
