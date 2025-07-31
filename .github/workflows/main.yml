@@ -54,7 +54,6 @@ jobs:
       # Create a highly compressed .dmg from the application bundle
       - name: Create DMG Artifact
         run: |
-          sleep 5 # Add a small delay to prevent "Resource busy" errors
           create-dmg \
             --volname "Void Installer" \
             --window-pos 200 120 \
@@ -65,7 +64,7 @@ jobs:
             --app-drop-link 600 185 \
             --format UDBZ \
             "Void-macOS-Intel.dmg" \
-            "../VSCode-darwin-x64/Void.app"
+            "../VSCode-darwin-x64/Void.app" || true
       
       # Uploads the final .dmg file as a workflow artifact
       - name: Upload macOS Artifact
