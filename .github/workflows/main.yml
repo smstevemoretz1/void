@@ -1,5 +1,5 @@
 # This is a GitHub Actions workflow to build the Void editor for macOS (Intel).
-# It has been updated to use the correct gulp task for a minified release build.
+# It now creates a compressed .dmg file to produce a small, distributable artifact.
 
 name: Build Void for macOS (Intel)
 
@@ -29,9 +29,11 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
-      # Install libtool (GNU libtool) to prevent build errors on macOS (as per docs)
+      # Install libtool (GNU libtool) and create-dmg for packaging
       - name: Install macOS Prerequisites
-        run: brew install libtool
+        run: |
+          brew install libtool
+          brew install create-dmg
 
       # Installs project dependencies, providing a GitHub token to avoid rate-limiting issues
       - name: "Install Dependencies"
@@ -45,17 +47,27 @@ jobs:
           NODE_OPTIONS: "--max-old-space-size=8192"
         run: npm run buildreact
 
-      # Run the single gulp task that compiles, minifies, and packages the application.
-      - name: Package Minified macOS Application (Intel)
-        run: npm run gulp vscode-darwin-x64-min
+      # Run the gulp task to create the unminified application bundle
+      - name: Build macOS Application (Intel)
+        run: npm run gulp vscode-darwin-x64
 
-      # Move the artifact into the workspace to prepare for upload
-      - name: Move Artifact for Upload
-        run: mv ../VSCode-darwin-x64-min .
-
-      # Uploads the built application folder as a workflow artifact
+      # Create a compressed .dmg from the application bundle
+      - name: Create DMG Artifact
+        run: |
+          create-dmg \
+            --volname "Void Installer" \
+            --window-pos 200 120 \
+            --window-size 800 400 \
+            --icon-size 100 \
+            --icon "Void.app" 200 190 \
+            --hide-extension "Void.app" \
+            --app-drop-link 600 185 \
+            "Void-macOS-Intel.dmg" \
+            "../VSCode-darwin-x64/Void.app"
+      
+      # Uploads the final .dmg file as a workflow artifact
       - name: Upload macOS Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Void-macOS-Intel-App
-          path: VSCode-darwin-x64-min/
+          name: Void-macOS-Intel
+          path: Void-macOS-Intel.dmg
