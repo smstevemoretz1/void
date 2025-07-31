@@ -1,5 +1,5 @@
 # This is a GitHub Actions workflow to build the Void editor for macOS (Intel).
-# It has been updated based on the official build documentation.
+# It has been updated based on the official build documentation and package.json.
 
 name: Build Void for macOS (Intel)
 
@@ -15,8 +15,6 @@ jobs:
   build-macos-intel:
     # The type of runner that the job will run on.
     # Using macos-13 as it is the latest supported standard runner with an Intel (x64) architecture.
-    # macos-12 is deprecated, causing long queue times.
-    # macos-14 standard runners are ARM64 (Apple Silicon).
     runs-on: macos-13
 
     steps:
@@ -47,10 +45,12 @@ jobs:
           NODE_OPTIONS: "--max-old-space-size=8192"
         run: npm run buildreact
 
-      # Packages a minified, optimized release build by setting the VSCODE_MINIFY environment variable
+      # Run the dedicated minification script from package.json
+      - name: Minify VS Code Source
+        run: npm run minify-vscode
+
+      # Run the packaging task, which will now use the minified source code
       - name: Package macOS Application (Intel)
-        env:
-          VSCODE_MINIFY: "true"
         run: npm run gulp vscode-darwin-x64
 
       # Move the artifact into the workspace to prepare for upload
