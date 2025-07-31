@@ -1,5 +1,5 @@
 # This is a GitHub Actions workflow to build the Void editor for macOS (Intel).
-# It has been updated based on the official build documentation and package.json.
+# It has been updated to use the correct gulp task for a minified release build.
 
 name: Build Void for macOS (Intel)
 
@@ -45,21 +45,17 @@ jobs:
           NODE_OPTIONS: "--max-old-space-size=8192"
         run: npm run buildreact
 
-      # Run the dedicated minification script from package.json
-      - name: Minify VS Code Source
-        run: npm run minify-vscode
-
-      # Run the packaging task, which will now use the minified source code
-      - name: Package macOS Application (Intel)
-        run: npm run gulp vscode-darwin-x64
+      # Run the single gulp task that compiles, minifies, and packages the application.
+      - name: Package Minified macOS Application (Intel)
+        run: npm run gulp vscode-darwin-x64-min
 
       # Move the artifact into the workspace to prepare for upload
       - name: Move Artifact for Upload
-        run: mv ../VSCode-darwin-x64 .
+        run: mv ../VSCode-darwin-x64-min .
 
       # Uploads the built application folder as a workflow artifact
       - name: Upload macOS Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Void-macOS-Intel-App
-          path: VSCode-darwin-x64/
+          path: VSCode-darwin-x64-min/
