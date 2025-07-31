@@ -47,9 +47,11 @@ jobs:
           NODE_OPTIONS: "--max-old-space-size=8192"
         run: npm run buildreact
 
-      # Packages a minified, optimized release build using the --minify flag
+      # Packages a minified, optimized release build by setting the VSCODE_MINIFY environment variable
       - name: Package macOS Application (Intel)
-        run: npm run gulp -- vscode-darwin-x64 --minify
+        env:
+          VSCODE_MINIFY: "true"
+        run: npm run gulp vscode-darwin-x64
 
       # Move the artifact into the workspace to prepare for upload
       - name: Move Artifact for Upload
