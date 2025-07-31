@@ -55,20 +55,31 @@ jobs:
       - name: Move Application for Packaging
         run: mv ../VSCode-darwin-x64 .
 
-      # Create a highly compressed .dmg from the application bundle
+      # Create a highly compressed .dmg from the application bundle, with a retry loop
       - name: Create DMG Artifact
         run: |
-          create-dmg \
-            --volname "Void Installer" \
-            --window-pos 200 120 \
-            --window-size 800 400 \
-            --icon-size 100 \
-            --icon "Void.app" 200 190 \
-            --hide-extension "Void.app" \
-            --app-drop-link 600 185 \
+          set -x
+          max_tries=30
+          i=0
+          until create-dmg \
             --format UDBZ \
+            --volname "Void Installer" \
+            --window-size 660 400 \
+            --icon-size 160 \
+            --icon "Void.app" 180 170 \
+            --hide-extension "Void.app" \
+            --app-drop-link 480 170 \
             "Void-macOS-Intel.dmg" \
             "VSCode-darwin-x64/Void.app"
+          do
+            if [ $i -eq $max_tries ]
+            then
+              echo "Error: create-dmg did not succeed even after $max_tries tries."
+              exit 1
+            fi
+            i=$((i+1))
+            sleep 5
+          done
       
       # Uploads the final .dmg file as a workflow artifact
       - name: Upload macOS Artifact
